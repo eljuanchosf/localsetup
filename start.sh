@@ -15,7 +15,13 @@ install_packages() {
     sudo pip install ansible
 }
 
+run_ansible_playbook() {
+    sudo ansible-galaxy install -r requirements.yml
+    ansible-playbook playbook.yml --ask-sudo-pass
+}
+
 update_packages
 install_packages
+run_ansible_playbook
 
 echo "Done!!!"
