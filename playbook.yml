@@ -1,11 +1,17 @@
 ---
-- hosts: localhost
-  gather_facts: false
+- hosts: 127.0.0.1
+  connection: local
+  gather_facts: true
   vars:
-    http_port: 80
-    max_clients: 200
-#  remote_user: root
-  tasks:
+    gvm_root: "{{ ansible_env.HOME }}/.gvm"
+    rvm_root: "{{ ansible_env.HOME }}/.rvm"
+  pre_tasks:
+    - name: Check if GVM exists
+      stat: path="{{ gvm_root }}"
+      register: gvm_exists
+    - name: Check if RVM exists
+      stat: path="{{ rvm_root }}"
+      register: rvm_exists    
     - name: update apt cache
       apt: update_cache=yes cache_valid_time=86400
       tags: [ 'packages' ]
@@ -13,4 +19,33 @@
       apt: name={{item}} state=present
       with_items:
         - git
-      tags: [ 'packages' ]
+        - wget
+      become: true
+      tags: [ 'packages' ] 
+  roles:
+  # Missing the KeePassX role
+    - role: mhalano.skypeforlinux
+      become: true
+    - role: altermn.rvm
+      rvm_install_type: user
+      when: rvm_exists.stat.exists == false
+    - role: suzuki-shunsuke.gvm
+      gvm_rc_path: "{{ ansible_env.HOME }}/.bashrc"
+      when: gvm_exists.stat.exists == false
+    - role: azavea.terraform
+      terraform_version: 0.9.9
+      become: true
+    - role: gantsign.visual-studio-code
+      become: true
+    - role: henriklynggaard.keepassxc
+      become: true
+  tasks:
+    - name: Install software packages
+      apt: name={{item}} state=present
+      with_items:
+        - dropbox
+        - virtualbox-qt
+        - vagrant
+        - vim        
+      become: true
+      tags: [ 'packages' ] 
