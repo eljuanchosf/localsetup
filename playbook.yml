@@ -46,6 +46,16 @@
         - dropbox
         - virtualbox-qt
         - vagrant
-        - vim        
+        - vim
+        - tmux        
       become: true
-      tags: [ 'packages' ] 
+      tags: [ 'packages' ]
+    - name: Get the N7 Wallpaper
+      get_url:
+        url: http://cdn.wallpapersafari.com/72/4/O937pm.png
+        dest: /tmp/n7-wp.png
+        mode: 0440
+    - name: Install the Wallpaper
+      command: "gsettings set org.gnome.desktop.background picture-uri file:////tmp/n7-wp.png"
+
+      
