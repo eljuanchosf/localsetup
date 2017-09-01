@@ -47,7 +47,9 @@
         - virtualbox-qt
         - vagrant
         - vim
-        - tmux        
+        - tmux
+        - neovim
+        - xsel
       become: true
       tags: [ 'packages' ]
     - name: Get the N7 Wallpaper
